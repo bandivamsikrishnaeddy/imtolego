@@ -1,0 +1,12 @@
+TripoSR/
+/tsr
+outputs/
+uploads/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.DS_Store
+*.egg-info/
+.venv/
+venv/

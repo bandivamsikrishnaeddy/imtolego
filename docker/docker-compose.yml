@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: imtolego-api
+    ports:
+      - "8000:8000"
+    environment:
+      - UVICORN_HOST=0.0.0.0
+      - UVICORN_PORT=8000
+      - UVICORN_WORKERS=1
+      - DEVICE=cuda:0
+      - CHUNK_SIZE=8192
+      - MC_RESOLUTION=256
+      - REMOVE_BG=true
+      - FOREGROUND_RATIO=0.85
+      - MAX_UPLOAD_SIZE_MB=20
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../uploads:/app/uploads
+      - ../outputs:/app/outputs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

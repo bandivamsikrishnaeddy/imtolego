@@ -1,0 +1,43 @@
+# Enterprise LEGO 3D Pipeline - requirements.txt
+# Core ML / Vision
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch>=2.0.0
+torchvision>=0.15.0
+transformers==4.35.0
+einops==0.7.0
+numpy>=1.24.0
+Pillow==10.1.0
+imageio[ffmpeg]
+huggingface-hub
+
+# 3D / Geometry
+rembg
+trimesh==4.0.5
+xatlas==0.0.9
+moderngl==5.10.0
+git+https://github.com/tatsy/torchmcubes.git
+
+# Web API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Config / Utils
+omegaconf==2.3.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+prometheus-client>=0.19.0
+
+# Logging / Observability
+structlog>=23.0.0
+
+# Background Jobs
+celery>=5.3.0
+redis>=5.0.0
+
+# Optional: Use diskcache for simple local queue if Redis is unavailable
+diskcache>=5.6.0
+
+# Testing
+pytest>=7.4.0
+httpx>=0.25.0
