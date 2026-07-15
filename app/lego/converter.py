@@ -134,8 +134,7 @@ class LegoConverter:
         # 2. Voxelize at true LEGO pitch (8mm cube voxel)
         pitch = self.stud_mm
         voxel = voxelize(mesh, pitch=pitch)
-        occ = voxel.matrix  # bool array; shape depends on trimesh internals
-        # trimesh voxel.matrix is typically (z, y, x) — flatten and remap
+        occ = voxel.matrix  # bool array, indexed (x, y, z)
         if occ.ndim != 3:
             raise RuntimeError(f"Unexpected voxel matrix ndim={occ.ndim}")
         logger.info("voxelization_done", shape=occ.shape)
@@ -175,21 +174,23 @@ class LegoConverter:
 
     # ------------------------------------------------------------------ #
     def _extract_occupied(self, occ: np.ndarray) -> np.ndarray:
-        """Return N×3 array of (x,y,z) voxel indices that become LEGO."""
+        """Return N×3 array of (x,y,z) voxel indices that become LEGO.
+
+        trimesh's voxel.matrix indices already align with (x, y, z) —
+        no axis reorder needed. grid_shape in convert() is derived from
+        occ.shape directly, so it must stay consistent with this ordering.
+        """
         if not self.hollow:
-            # occ shape may be (z, y, x); argwhere returns (z_idx, y_idx, x_idx)
-            # We want output as (x, y, z)
-            raw = np.argwhere(occ)
-            return raw[:, [2, 1, 0]]  # reorder to (x, y, z)
+            return np.argwhere(occ)
 
         # Surface shell
         occ_set = set(map(tuple, np.argwhere(occ).tolist()))
         directions = np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])
         surface = []
-        for zyx in occ_set:
-            z, y, x = zyx
-            for dz, dy, dx in directions:
-                if (z+dz, y+dy, x+dx) not in occ_set:
+        for xyz in occ_set:
+            x, y, z = xyz
+            for dx, dy, dz in directions:
+                if (x+dx, y+dy, z+dz) not in occ_set:
                     surface.append((x, y, z))
                     break
         return np.array(surface, dtype=int)

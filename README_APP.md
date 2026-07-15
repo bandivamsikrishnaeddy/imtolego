@@ -7,6 +7,9 @@ A production-grade system that turns **one image** into:
 
 Built with **FastAPI**, **TripoSR**, and a custom **voxel → brick packing** engine.
 
+`tsr/` is TripoSR's model code (MIT licensed, see `tsr/LICENSE`), vendored
+directly into this repo rather than pulled in as a separate clone/submodule.
+
 ---
 
 ## Project Layout
@@ -24,7 +27,7 @@ imtolego/
 │   │   └── schemas.py         # pydantic request / response models
 │   └── pipeline/
 │       └── orchestrator.py     # full pipeline w/ progress callbacks
-├── tsr/                       # TripoSR model code (symlinked)
+├── tsr/                       # TripoSR model code (vendored)
 ├── tests/
 │   └── test_smoke.py
 ├── scripts/
